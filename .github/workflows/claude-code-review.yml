@@ -10,14 +10,43 @@ on:
     #   - "src/**/*.js"
     #   - "src/**/*.jsx"
 
+# The two reviews are separate jobs so they run in parallel and one failing
+# doesn't stop the other.
 jobs:
-  claude-review:
+  ponytail-review:
     # Optional: Filter by PR author
     # if: |
     #   github.event.pull_request.user.login == 'external-contributor' ||
     #   github.event.pull_request.user.login == 'new-developer' ||
     #   github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR'
 
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+      issues: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Run ponytail review
+        id: ponytail-review
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          plugin_marketplaces: 'https://github.com/DietrichGebert/ponytail.git'
+          plugins: 'ponytail@ponytail'
+          prompt: |
+            /ponytail:ponytail-review ${{ github.repository }}/pull/${{ github.event.pull_request.number }}
+
+            When the review is done, post the full report as a single comment on the pull request with `gh pr comment`.
+          claude_args: '--allowedTools "Bash(gh pr comment:*)"'
+
+  claude-review:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -41,4 +70,3 @@ jobs:
           prompt: '/code-review:code-review ${{ github.repository }}/pull/${{ github.event.pull_request.number }}'
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://code.claude.com/docs/en/cli-reference for available options
-
