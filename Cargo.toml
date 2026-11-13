@@ -1,0 +1,30 @@
+[workspace]
+resolver = "3"
+members = ["crates/*", "xtask"]
+default-members = ["crates/*"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+license = "Apache-2.0"
+repository = "https://github.com/cerebrai-app/cerebrai-crates"
+
+[workspace.dependencies]
+# Internal crates
+cerebrai-python = { path = "crates/cerebrai-python", version = "0.1.0" }
+
+# External crates (pin versions here, inherit with `dep.workspace = true`)
+anyhow = "1"
+serde_json = "1"
+sha2 = "0.10"
+tar = "0.4"
+ureq = { version = "3", features = ["platform-verifier"] }
+zstd = "0.13"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+missing_docs = "warn"
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }

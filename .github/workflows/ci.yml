@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  lint:
+    name: Format & Clippy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: cerebrai-app/actions/setup-rust@57b263623437524d4a872fe0b268b94e96d0b046 # main
+        with:
+          components: rustfmt, clippy
+      # Same commands as `cargo xtask lint` locally.
+      - run: cargo xtask lint
+
+  build-test:
+    name: Build & Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: cerebrai-app/actions/setup-rust@57b263623437524d4a872fe0b268b94e96d0b046 # main
+      - run: cargo xtask test
+
+  # Build and test with exactly the workspace `rust-version`, so the declared
+  # minimum is a tested one. brainctl and workctl declare the same floor.
+  msrv:
+    name: MSRV (rust-version in Cargo.toml)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: cerebrai-app/actions/setup-rust@57b263623437524d4a872fe0b268b94e96d0b046 # main
+        with:
+          # Reads the workspace rust-version; setup-rust exports RUSTUP_TOOLCHAIN so
+          # rust-toolchain.toml (which pins stable) can't override it.
+          toolchain: msrv
+      - run: cargo xtask test
+
+  # No arm64 Linux runner here, so the tests run under QEMU user-mode emulation
+  # with the arm64 libc from the cross toolchain.
+  test-arm64:
+    name: Test (arm64 Linux under QEMU)
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: cerebrai-app/actions/setup-rust@57b263623437524d4a872fe0b268b94e96d0b046 # main
+        with:
+          cross-aarch64-linux: 'true'
+          cache-key: aarch64-unknown-linux-gnu
+      - run: cargo test --workspace --locked --target aarch64-unknown-linux-gnu --lib
