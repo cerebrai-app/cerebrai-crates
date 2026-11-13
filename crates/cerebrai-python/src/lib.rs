@@ -8,6 +8,10 @@
 //! Layout: `${XDG_DATA_HOME}/python-build-standalone/<version>+<build options>/`
 //! (e.g. `3.14.10+freethreaded+pgo+lto`), containing the archive's own
 //! `python/` tree. If that directory already exists nothing is downloaded.
+//!
+//! Each archive is checked against the release's `SHA256SUMS`. That catches
+//! corrupt or truncated downloads, but the sums come from the same GitHub
+//! release as the archive, so it does not protect against a compromised release.
 
 mod assets;
 mod net;

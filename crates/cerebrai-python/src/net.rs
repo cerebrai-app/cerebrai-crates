@@ -24,7 +24,7 @@ pub(crate) fn download(
         .with_context(|| format!("GET {url}"))?;
     let total = resp.body().content_length();
     let reader = resp.body_mut().as_reader();
-    let mut file = File::create(out)?;
+    let mut file = File::create(out).with_context(|| format!("creating {}", out.display()))?;
     copy_verified(reader, &mut file, total, expected_sha256)
         .with_context(|| format!("downloading {url}"))
 }
