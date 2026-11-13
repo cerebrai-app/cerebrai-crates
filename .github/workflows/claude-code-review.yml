@@ -7,6 +7,11 @@ on:
   pull_request:
     types: [opened, synchronize, ready_for_review, reopened]
 
+# A new commit on the PR cancels the review of the previous one.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 # The two reviews are separate jobs so they run in parallel and one failing
 # doesn't stop the other.
 jobs:
