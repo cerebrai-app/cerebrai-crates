@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
-      - uses: cerebrai-app/actions/setup-rust@57b263623437524d4a872fe0b268b94e96d0b046 # main
+      - uses: cerebrai-app/actions/setup-rust@57b263623437524d4a872fe0b268b94e96d0b046 # v1.0.0
         with:
           components: rustfmt, clippy
       # Same commands as `cargo xtask lint` locally.
@@ -32,7 +32,7 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
-      - uses: cerebrai-app/actions/setup-rust@57b263623437524d4a872fe0b268b94e96d0b046 # main
+      - uses: cerebrai-app/actions/setup-rust@57b263623437524d4a872fe0b268b94e96d0b046 # v1.0.0
       - run: cargo xtask test
 
   # Build and test with exactly the workspace `rust-version`, so the declared
@@ -42,7 +42,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
-      - uses: cerebrai-app/actions/setup-rust@57b263623437524d4a872fe0b268b94e96d0b046 # main
+      - uses: cerebrai-app/actions/setup-rust@57b263623437524d4a872fe0b268b94e96d0b046 # v1.0.0
         with:
           # Reads the workspace rust-version; setup-rust exports RUSTUP_TOOLCHAIN so
           # rust-toolchain.toml (which pins stable) can't override it.
@@ -56,7 +56,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
-      - uses: cerebrai-app/actions/setup-rust@57b263623437524d4a872fe0b268b94e96d0b046 # main
+      - uses: cerebrai-app/actions/setup-rust@57b263623437524d4a872fe0b268b94e96d0b046 # v1.0.0
         with:
           cross-aarch64-linux: 'true'
           cache-key: aarch64-unknown-linux-gnu
