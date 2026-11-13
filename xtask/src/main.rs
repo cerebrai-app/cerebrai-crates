@@ -12,13 +12,16 @@ Commands:
   ci      Run lint and test, as CI does
 ";
 
+/// `cargo test` arguments, shared by `test` and `ci`.
+const TEST: &[&str] = &["test", "--workspace", "--locked"];
+
 fn main() -> ExitCode {
     let task = std::env::args().nth(1);
     let result = match task.as_deref() {
         Some("fmt") => cargo(&["fmt", "--all"]),
         Some("lint") => lint(),
-        Some("test") => cargo(&["test", "--workspace", "--locked"]),
-        Some("ci") => lint().and_then(|()| cargo(&["test", "--workspace", "--locked"])),
+        Some("test") => cargo(TEST),
+        Some("ci") => lint().and_then(|()| cargo(TEST)),
         _ => {
             eprint!("{HELP}");
             return ExitCode::from(2);

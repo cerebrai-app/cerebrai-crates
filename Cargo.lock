@@ -54,10 +54,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "cerebrai-core"
-version = "0.1.0"
-
-[[package]]
 name = "cerebrai-python"
 version = "0.1.0"
 dependencies = [

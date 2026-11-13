@@ -12,7 +12,6 @@ repository = "https://github.com/cerebrai-app/cerebrai-crates"
 
 [workspace.dependencies]
 # Internal crates
-cerebrai-core = { path = "crates/cerebrai-core", version = "0.1.0" }
 cerebrai-python = { path = "crates/cerebrai-python", version = "0.1.0" }
 
 # External crates (pin versions here, inherit with `dep.workspace = true`)

@@ -17,12 +17,14 @@ pub(crate) fn download(
     url: &str,
     out: &Path,
     expected_sha256: &str,
+    show_progress: bool,
 ) -> Result<()> {
     let mut resp = agent
         .get(url)
         .call()
         .with_context(|| format!("GET {url}"))?;
-    let total = resp.body().content_length();
+    // Progress lines are printed only when the total size is known.
+    let total = resp.body().content_length().filter(|_| show_progress);
     let reader = resp.body_mut().as_reader();
     let mut file = File::create(out).with_context(|| format!("creating {}", out.display()))?;
     copy_verified(reader, &mut file, total, expected_sha256)
@@ -95,8 +97,8 @@ pub(crate) fn http_text(agent: &ureq::Agent, url: &str) -> Result<String> {
         .with_context(|| format!("reading {url}"))
 }
 
-pub(crate) fn latest_tag(agent: &ureq::Agent) -> Result<String> {
-    tag_from_latest_release(&http_text(agent, LATEST_RELEASE_URL)?)
+pub(crate) fn latest_tag(agent: &ureq::Agent, latest_release_url: &str) -> Result<String> {
+    tag_from_latest_release(&http_text(agent, latest_release_url)?)
 }
 
 /// The release tag in `latest-release.json`. It ends up in a URL, so it is

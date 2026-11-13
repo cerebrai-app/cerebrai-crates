@@ -78,7 +78,6 @@ pub(crate) fn unpack_and_publish(archive: &Path, partial: &Path, dest: &Path) ->
     if let Err(err) = rename_retrying(partial, dest, RENAME_ATTEMPTS, RENAME_DELAY) {
         // Another process may have finished the same install first.
         if dest.exists() {
-            eprintln!("already installed by another process: {}", dest.display());
             return Ok(false);
         }
         return Err(err).with_context(|| format!("moving into {}", dest.display()));
