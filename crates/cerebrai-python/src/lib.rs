@@ -113,8 +113,6 @@ struct Source<'a> {
 /// An invalid [`Options::python_version`] is rejected before anything touches
 /// the network or the file system.
 pub fn install(opts: &Options) -> Result<PathBuf> {
-    // Checked first, so a bad value fails before anything touches the network.
-    validate_python_version(&opts.python_version)?;
     let root = data_home_from(
         std::env::var_os("XDG_DATA_HOME"),
         std::env::var_os("HOME"),
@@ -135,6 +133,7 @@ pub fn install(opts: &Options) -> Result<PathBuf> {
 
 /// [`install`] with the data directory, platform and release source given.
 fn install_in(opts: &Options, root: &Path, triple: &str, src: &Source) -> Result<PathBuf> {
+    // Checked first, so a bad value fails before anything touches the network.
     validate_python_version(&opts.python_version)?;
     let tag = latest_tag(src.agent, src.latest_release_url)?;
     let sums_url = format!("{}/{tag}/SHA256SUMS", src.download_url);
