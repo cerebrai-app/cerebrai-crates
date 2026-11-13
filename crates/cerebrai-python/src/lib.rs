@@ -2,7 +2,8 @@
 //! distribution into the user's XDG data directory.
 //!
 //! Shared by the `brainctl` and `workctl` command line tools. Progress and
-//! notes are written to stderr, and the outcome of [`install`] is printed to stdout.
+//! notes are written to stderr; nothing is written to stdout, so callers keep
+//! it for their own output. [`install`] returns the install directory.
 //!
 //! Layout: `${XDG_DATA_HOME}/python-build-standalone/<version>+<build options>/`
 //! (e.g. `3.14.10+freethreaded+pgo+lto`), containing the archive's own
@@ -100,7 +101,7 @@ pub fn install(opts: &Options) -> Result<PathBuf> {
 
     let dest = root.join(asset.dir_name());
     if dest.exists() {
-        println!("already installed: {}", dest.display());
+        eprintln!("already installed: {}", dest.display());
         return Ok(dest);
     }
 
@@ -117,7 +118,7 @@ pub fn install(opts: &Options) -> Result<PathBuf> {
     let _ = fs::remove_file(&archive);
     let _ = fs::remove_dir_all(&partial);
     if result? {
-        println!("installed: {}", dest.display());
+        eprintln!("installed: {}", dest.display());
     }
     Ok(dest)
 }

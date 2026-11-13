@@ -17,8 +17,8 @@ fn main() -> ExitCode {
     let result = match task.as_deref() {
         Some("fmt") => cargo(&["fmt", "--all"]),
         Some("lint") => lint(),
-        Some("test") => cargo(&["test", "--workspace"]),
-        Some("ci") => lint().and_then(|()| cargo(&["test", "--workspace"])),
+        Some("test") => cargo(&["test", "--workspace", "--locked"]),
+        Some("ci") => lint().and_then(|()| cargo(&["test", "--workspace", "--locked"])),
         _ => {
             eprint!("{HELP}");
             return ExitCode::from(2);
@@ -39,6 +39,7 @@ fn lint() -> Result<(), String> {
         "clippy",
         "--workspace",
         "--all-targets",
+        "--locked",
         "--",
         "-D",
         "warnings",

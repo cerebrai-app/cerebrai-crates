@@ -61,7 +61,13 @@ jobs:
         with:
           toolchain: ${{ steps.msrv.outputs.version }}
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
-      - run: cargo test --workspace --locked
+      # rust-toolchain.toml pins `stable`, which beats rustup's default, so the
+      # MSRV has to be forced with RUSTUP_TOOLCHAIN (and is printed to prove it).
+      - run: |
+          rustc --version
+          cargo test --workspace --locked
+        env:
+          RUSTUP_TOOLCHAIN: ${{ steps.msrv.outputs.version }}
 
   # No arm64 Linux runner here, so the tests run under QEMU user-mode emulation
   # with the arm64 libc from the cross toolchain.
